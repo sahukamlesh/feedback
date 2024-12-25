@@ -20,7 +20,7 @@ const FeedbackForm = () => {
 
     // Data to be sent
     const feedbackData = {
-      name: name === "Anonymous User" ? "Anonymous User" : userName, // If name is anonymous, send "Anonymous User"
+      name: name === userName ? userName : 'Anonymous User', // If name is anonymous, send "Anonymous User"
       teacherName,
       email,
       feedback,
@@ -44,15 +44,15 @@ const FeedbackForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-6 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">
+    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-indigo-200 flex items-center justify-center py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full bg-white shadow-lg rounded-xl p-8">
+        <h2 className="text-3xl font-bold text-gray-800 text-center mb-4">
           Feedback Form
         </h2>
         <p className="text-gray-600 text-center mb-6">
-          Love to hear your thoughts!
+          We value your opinion! Please share your feedback with us.
         </p>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name Dropdown */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -62,7 +62,7 @@ const FeedbackForm = () => {
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:ring-opacity-50 transition duration-300"
             >
               <option value={userName}>{userName}</option>
               <option value="Anonymous User">Anonymous User</option>
@@ -71,7 +71,7 @@ const FeedbackForm = () => {
 
           {/* Teacher Name Input */}
           <div>
-            <label htmlFor="teacherName" className="block text-sm font-medium text-gray-700" required>
+            <label htmlFor="teacherName" className="block text-sm font-medium text-gray-700">
               Teacher Name
             </label>
             <input
@@ -80,7 +80,7 @@ const FeedbackForm = () => {
               value={teacherName}
               onChange={(e) => setTeacherName(e.target.value)}
               placeholder="Enter teacher's name"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:ring-opacity-50 transition duration-300"
               required
             />
           </div>
@@ -96,7 +96,7 @@ const FeedbackForm = () => {
               onChange={(e) => setFeedback(e.target.value)}
               placeholder="Share your feedback"
               rows="4"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:ring-opacity-50 transition duration-300"
               required
             ></textarea>
           </div>
@@ -105,11 +105,11 @@ const FeedbackForm = () => {
           <div>
             <button
               type="submit"
-              className={`w-full py-2 px-4 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+              className={`w-full py-3 px-4 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                 isSubmitting
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
-              }`}
+              } transition duration-300`}
               disabled={isSubmitting}
             >
               {isSubmitting ? "Submitting..." : "Submit Feedback"}
