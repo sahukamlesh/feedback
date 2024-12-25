@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { getDatabase, ref, push } from "firebase/database";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { db } from "./context/firebase"; // Import Firebase app instance
 
 const FeedbackForm = () => {
   const [name, setName] = useState("");
@@ -11,9 +12,11 @@ const FeedbackForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Reference to Firebase Realtime Database
-    const db = getDatabase();
-    const feedbackRef = ref(db, "feedbacks");
+    // Get Firestore instance
+    // const db = getFirestore(app);  // Ensure you use the correct Firebase instance
+
+    // Reference to the feedbacks collection in Firestore
+    const feedbacksCollection = collection(db, "feedbacks");
 
     // Data to be sent
     const feedbackData = {
@@ -24,7 +27,8 @@ const FeedbackForm = () => {
     };
 
     try {
-      await push(feedbackRef, feedbackData); // Save data to Firebase
+      // Add the feedback document to Firestore
+      await addDoc(feedbacksCollection, feedbackData);
       alert("Thank you for your feedback!");
       setName("");
       setEmail("");
@@ -44,7 +48,7 @@ const FeedbackForm = () => {
           Feedback Form
         </h2>
         <p className="text-gray-600 text-center mb-6">
-           love to hear your thoughts!
+          love to hear your thoughts!
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name Input */}
@@ -61,7 +65,7 @@ const FeedbackForm = () => {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
               required
             />
-          </div>          
+          </div>
           {/* Feedback Textarea */}
           <div>
             <label htmlFor="feedback" className="block text-sm font-medium text-gray-700">
