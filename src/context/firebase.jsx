@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   getAuth,
+  updateProfile
 } from "firebase/auth";
 import { getFirestore, setDoc, doc, getDoc } from "firebase/firestore";
 
@@ -26,13 +27,16 @@ export const FirebaseProvider = ({ children }) => {
   const signUpUserWithEmailPassword = async (email, password, role, name) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-  
+    await updateProfile(user, {
+      displayName: name,
+    });
     // Save role to Firestore
     await setDoc(doc(db, "users", user.uid), { name, email, role });
     return user;
   };
 
   const signInUserWithEmailPassword = async (email, password) => {
+    
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 

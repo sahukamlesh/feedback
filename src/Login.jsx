@@ -12,21 +12,32 @@ const Login = ({ setRole }) => {
   const navigate = useNavigate();
 
   const handleSignIn = async () => {
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+  
+    if (!trimmedEmail || !trimmedPassword) {
+      alert("Email and password cannot be empty!");
+      return;
+    }
+  
     try {
-      const { role } = await Firebase.signInUserWithEmailPassword(email, password);
+      const { user, role } = await Firebase.signInUserWithEmailPassword(trimmedEmail, trimmedPassword);
       setRole(role);
-      navigate(role === "student" ? "/feedback" : "/admin");
+      const displayName = user.displayName || "Anonymous User";
+      navigate(role === "student" ? "/feedback" : "/admin", { state: { userName: displayName } });
     } catch (error) {
-        console.log("hello error",error)
-      // Check if the error is "user not found" (Firebase-specific error)
-      if (error.code === "auth/invalid-credential") {
-        alert("Your ID does not exist. Please sign up.");
-        setIsSignUp(true); // Redirect to the sign-up page (can be the same as login page)
+      console.log("Error during login:", error);
+      if (error.code === "auth/user-not-found") {
+        alert("User does not exist. Please sign up.");
+        setIsSignUp(true);
+      } else if (error.code === "auth/wrong-password") {
+        alert("Incorrect password. Please try again.");
       } else {
         alert("Login failed: " + error.message);
       }
     }
   };
+  
 
   const handleSignUp = async () => {
     try {
@@ -57,6 +68,9 @@ const Login = ({ setRole }) => {
       setIsSignUp(false);
     } catch (error) {
       alert("User  creation failed: " + error.message);
+      if(error.code === "auth/email-already-in-use"){
+        alert("Email is already in use. Please try a different email.");
+      }
     }
   };
 

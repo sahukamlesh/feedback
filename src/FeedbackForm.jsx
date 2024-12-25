@@ -1,26 +1,27 @@
 import { useState } from "react";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
-import { db } from "./context/firebase"; // Import Firebase app instance
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "./context/firebase"; 
+import { useLocation } from "react-router-dom";
 
 const FeedbackForm = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [feedback, setFeedback] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const location = useLocation();
+  const userName = location.state?.userName || "Guest";
+  const [name, setName] = useState(userName); // Set the default name to userName
+  const [teacherName, setTeacherName] = useState(""); // Teacher name state
+  const [email, setEmail] = useState(""); // Email state
+  const [feedback, setFeedback] = useState(""); // Feedback state
+  const [isSubmitting, setIsSubmitting] = useState(false); // Submit state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Get Firestore instance
-    // const db = getFirestore(app);  // Ensure you use the correct Firebase instance
-
-    // Reference to the feedbacks collection in Firestore
     const feedbacksCollection = collection(db, "feedbacks");
 
     // Data to be sent
     const feedbackData = {
-      name,
+      name: name === "Anonymous User" ? "Anonymous User" : userName, // If name is anonymous, send "Anonymous User"
+      teacherName,
       email,
       feedback,
       timestamp: Date.now(),
@@ -30,9 +31,10 @@ const FeedbackForm = () => {
       // Add the feedback document to Firestore
       await addDoc(feedbacksCollection, feedbackData);
       alert("Thank you for your feedback!");
-      setName("");
-      setEmail("");
-      setFeedback("");
+      setName(userName); 
+      setTeacherName(""); // Reset teacher name
+      setEmail(""); // Reset email
+      setFeedback(""); // Reset feedback
     } catch (error) {
       alert("Failed to submit feedback. Please try again.");
       console.error(error);
@@ -48,24 +50,41 @@ const FeedbackForm = () => {
           Feedback Form
         </h2>
         <p className="text-gray-600 text-center mb-6">
-          love to hear your thoughts!
+          Love to hear your thoughts!
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name Input */}
+          {/* Name Dropdown */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              Choose your display name
+            </label>
+            <select
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+            >
+              <option value={userName}>{userName}</option>
+              <option value="Anonymous User">Anonymous User</option>
+            </select>
+          </div>
+
+          {/* Teacher Name Input */}
+          <div>
+            <label htmlFor="teacherName" className="block text-sm font-medium text-gray-700" required>
               Teacher Name
             </label>
             <input
-              id="name"
+              id="teacherName"
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
+              value={teacherName}
+              onChange={(e) => setTeacherName(e.target.value)}
+              placeholder="Enter teacher's name"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
               required
             />
           </div>
+
           {/* Feedback Textarea */}
           <div>
             <label htmlFor="feedback" className="block text-sm font-medium text-gray-700">
